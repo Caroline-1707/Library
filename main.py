@@ -95,13 +95,20 @@ def remove_book(books: List[Book]) -> None:
 
     :param books: Список книг, из которого будет удалена книга.
     """
-    book_id = int(input("Введите id книги для удаления: "))
+    while True:
+        try:
+            book_id = int(input("Введите id книги для удаления: "))
+            break  # Выход из цикла, если ввод корректен
+        except ValueError:
+            print("Некорректный ввод. Пожалуйста, введите числовой идентификатор книги.")
+
     for book in books:
         if book.id == book_id:
             books.remove(book)
             save_books(books)
             print(f"Книга с id {book_id} удалена.")
             return
+
     print("Книга не найдена.")
 
 
