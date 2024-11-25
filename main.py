@@ -71,7 +71,15 @@ def add_book(books: List[Book]) -> None:
     """
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
-    year = int(input("Введите год издания: "))
+
+    while True:
+        try:
+            year = int(input("Введите год издания: "))
+            if year < 0:
+                raise ValueError("Год не может быть отрицательным.")
+            break  
+        except ValueError as e:
+            print(f"Ошибка ввода года: {e}. Пожалуйста, введите корректный год.")
 
     book_id = len(books) + 1
     new_book = Book(book_id, title, author, year)
