@@ -59,25 +59,21 @@ def save_books(books: List[Book]) -> None:
         with open(DATA_FILE, 'w', encoding='utf-8') as file:
             json.dump([book.to_dict() for book in books], file, ensure_ascii=False, indent=4)
     except IOError as e:
-        print(f"Ошибка при сохранении книг: {e}")
+        raise OSError(f"Ошибка при сохранении книг: {e}")
 
 
 def add_book(books: List[Book]) -> None:
-    """Добавляет новую книгу в библиотеку.
-
-    Запрашивает у пользователя данные о книге и добавляет ее в список.
-
-    :param books: Список книг, в который будет добавлена новая книга.
-    """
+    """Добавляет новую книгу в библиотеку."""
     title = input("Введите название книги: ")
     author = input("Введите автора книги: ")
 
     while True:
         try:
-            year = int(input("Введите год издания: "))
+            year_input = input("Введите год издания: ")
+            year = int(year_input)
             if year < 0:
                 raise ValueError("Год не может быть отрицательным.")
-            break  
+            break
         except ValueError as e:
             print(f"Ошибка ввода года: {e}. Пожалуйста, введите корректный год.")
 
@@ -98,7 +94,7 @@ def remove_book(books: List[Book]) -> None:
     while True:
         try:
             book_id = int(input("Введите id книги для удаления: "))
-            break  # Выход из цикла, если ввод корректен
+            break
         except ValueError:
             print("Некорректный ввод. Пожалуйста, введите числовой идентификатор книги.")
 
@@ -120,11 +116,11 @@ def search_books(books: List[Book], search_term: str) -> List[Book]:
     :return: Список найденных книг.
     """
     found_books = [
-        book for book in books 
+        book for book in books
         if (
-            search_term in book.title or
-            search_term in book.author or
-            search_term == str(book.year)
+                search_term in book.title or
+                search_term in book.author or
+                search_term == str(book.year)
         )
     ]
     return found_books
@@ -210,3 +206,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
