@@ -39,7 +39,6 @@ class TestLibrary(unittest.TestCase):
             self.assertEqual(len(data), 4)
             self.assertEqual(data[3]['title'], "Brave New World")
 
-    
     @patch("builtins.open", new_callable=mock_open)
     def test_load_books_permission_error(self, mock_file):
         """Тест загрузки книг с ошибкой доступа."""
@@ -56,11 +55,14 @@ class TestLibrary(unittest.TestCase):
         with self.assertRaises(Exception):  # Проверяем на наличие исключения
             save_books([])  # Пытаемся сохранить пустой список
 
-    def test_add_book(self):
-        """Тест добавления новой книги."""
-        new_book = Book(4, "Fahrenheit 451", "Ray Bradbury", 1953)
-        add_book(self.books)  # Ввод данных будет запрашиваться
-        self.assertIn(new_book.title, [book.title for book in load_books()])
+    @patch('builtins.input', side_effect=["Тестовая книга", "Автор", "1953"])
+    def test_add_book_valid(self, mock_input):
+        """Тест добавления новой книги с корректными данными."""
+        books = []
+        add_book(books)  # Вводим корректные данные
+        
+        self.assertEqual(len(books), 1)  # Книга должна быть добавлена
+        self.assertEqual(books[0].title, "Тестовая книга")
 
     @patch('builtins.input', side_effect=["Тестовая книга", "Автор", "тысяча девятьсот девяносто девять"])
     def test_add_book_invalid_year_string(self, mock_input):
@@ -86,15 +88,18 @@ class TestLibrary(unittest.TestCase):
         
         self.assertEqual(len(books), 0)  # Книга не должна быть добавлена
 
-    def test_remove_book(self):
+    @patch('builtins.input', side_effect=["1"])  # Удаляем книгу с ID 1
+    def test_remove_book(self, mock_input):
         """Тест удаления книги по ID."""
-        remove_book(self.books)  # Ввод данных будет запрашиваться
+        remove_book(self.books)  
+        
         self.assertNotIn("1984", [book.title for book in load_books()])
 
     @patch('builtins.input', side_effect=["не числовое значение"])
     def test_remove_book_invalid_id_string(self, mock_input):
         """Тест удаления книги с некорректным ID (строка)."""
         books = [Book(1, "1984", "George Orwell", 1949)]
+        
         remove_book(books)  # Пытаемся удалить книгу с некорректным ID
         
         self.assertEqual(len(books), 1)  # Книга должна остаться
@@ -103,21 +108,24 @@ class TestLibrary(unittest.TestCase):
     def test_remove_book_negative_id(self, mock_input):
         """Тест удаления книги с отрицательным ID."""
         books = [Book(1, "1984", "George Orwell", 1949)]
-        remove_book(books)  # Пытаемся удалить книгу с отрицательным ID
+        
+        remove_book(books)  
         
         self.assertEqual(len(books), 1)  # Книга должна остаться
 
-    @patch('builtins.input', side_effect=["2"])  # ID несуществующей книги
+    @patch('builtins.input', side_effect=["2"])  
     def test_remove_book_nonexistent_id(self, mock_input):
         """Тест удаления книги с несуществующим ID."""
         books = [Book(1, "1984", "George Orwell", 1949)]
-        remove_book(books)  # Пытаемся удалить книгу с несуществующим ID
+        
+        remove_book(books)  
         
         self.assertEqual(len(books), 1)  # Книга должна остаться
 
     def test_search_books(self):
         """Тест поиска книг."""
         found_books = search_books(self.books, "1984")
+        
         self.assertEqual(len(found_books), 1)
         self.assertEqual(found_books[0].title, "1984")
 
@@ -125,19 +133,22 @@ class TestLibrary(unittest.TestCase):
         """Тест изменения статуса книги."""
         book_id = 1
         new_status = "выдана"
+        
         result = change_status(self.books, book_id, new_status)
 
         self.assertTrue(result)
+        
         self.assertEqual(self.books[0].status, new_status)
 
     def test_invalid_change_status(self):
-        """Тест изменения статуса на некорректное значение."""
-        book_id = 1
-        new_status = "недоступно"
-        result = change_status(self.books, book_id, new_status)
+       """Тест изменения статуса на некорректное значение."""
+       book_id = 1
+       new_status = "недоступно"
+       
+       result = change_status(self.books, book_id, new_status)
 
-        self.assertFalse(result)
+       self.assertFalse(result)
 
 
 if __name__ == "__main__":
-    unittest.main()
+   unittest.main()
