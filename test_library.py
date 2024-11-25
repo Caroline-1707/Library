@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch, mock_open
 import json
 import os
 from main import Book, load_books, save_books, add_book, remove_book, search_books, change_status
@@ -37,6 +38,23 @@ class TestLibrary(unittest.TestCase):
             data = json.load(file)
             self.assertEqual(len(data), 4)
             self.assertEqual(data[3]['title'], "Brave New World")
+
+    
+    @patch("builtins.open", new_callable=mock_open)
+    def test_load_books_permission_error(self, mock_file):
+        """Тест загрузки книг с ошибкой доступа."""
+        mock_file.side_effect = IOError("Недостаточно прав для чтения файла.")
+        
+        books = load_books()
+        self.assertEqual(books, [])  # Ожидаем пустой список
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_save_books_permission_error(self, mock_file):
+        """Тест сохранения книг с ошибкой доступа."""
+        mock_file.side_effect = IOError("Недостаточно прав для записи файла.")
+        
+        with self.assertRaises(Exception):  # Проверяем на наличие исключения
+            save_books([])  # Пытаемся сохранить пустой список
 
     def test_add_book(self):
         """Тест добавления новой книги."""
