@@ -62,6 +62,30 @@ class TestLibrary(unittest.TestCase):
         add_book(self.books)  # Ввод данных будет запрашиваться
         self.assertIn(new_book.title, [book.title for book in load_books()])
 
+    @patch('builtins.input', side_effect=["Тестовая книга", "Автор", "тысяча девятьсот девяносто девять"])
+    def test_add_book_invalid_year_string(self, mock_input):
+        """Тест добавления книги с некорректным годом (строка)."""
+        books = []
+        add_book(books)  # Вводим некорректный год
+        
+        self.assertEqual(len(books), 0)  # Книга не должна быть добавлена
+
+    @patch('builtins.input', side_effect=["Тестовая книга", "Автор", "19з1"])
+    def test_add_book_invalid_year_mixed(self, mock_input):
+        """Тест добавления книги с некорректным годом (смешанный ввод)."""
+        books = []
+        add_book(books)  # Вводим некорректный год
+        
+        self.assertEqual(len(books), 0)  # Книга не должна быть добавлена
+
+    @patch('builtins.input', side_effect=["Тестовая книга", "Автор", "-1999"])
+    def test_add_book_negative_year(self, mock_input):
+        """Тест добавления книги с отрицательным годом."""
+        books = []
+        add_book(books)  # Вводим отрицательный год
+        
+        self.assertEqual(len(books), 0)  # Книга не должна быть добавлена
+
     def test_remove_book(self):
         """Тест удаления книги по ID."""
         remove_book(self.books)  # Ввод данных будет запрашиваться
