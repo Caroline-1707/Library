@@ -9,8 +9,7 @@ class Book:
     """Класс для представления книги в библиотеке."""
 
     def __init__(self, id: int, title: str, author: str, year: int, status: str = "в наличии"):
-        """
-        Инициализация книги.
+        """Инициализация книги.
 
         :param id: Уникальный идентификатор книги.
         :param title: Название книги.
@@ -41,9 +40,13 @@ def load_books() -> List[Book]:
     :return: Список книг.
     """
     if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r', encoding='utf-8') as file:
-            books_data = json.load(file)
-            return [Book(**data) for data in books_data]
+        try:
+            with open(DATA_FILE, 'r', encoding='utf-8') as file:
+                books_data = json.load(file)
+                return [Book(**data) for data in books_data]
+        except (IOError, json.JSONDecodeError) as e:
+            print(f"Ошибка при загрузке книг: {e}")
+            return []
     return []
 
 
@@ -52,8 +55,11 @@ def save_books(books: List[Book]) -> None:
 
     :param books: Список книг для сохранения.
     """
-    with open(DATA_FILE, 'w', encoding='utf-8') as file:
-        json.dump([book.to_dict() for book in books], file, ensure_ascii=False, indent=4)
+    try:
+        with open(DATA_FILE, 'w', encoding='utf-8') as file:
+            json.dump([book.to_dict() for book in books], file, ensure_ascii=False, indent=4)
+    except IOError as e:
+        print(f"Ошибка при сохранении книг: {e}")
 
 
 def add_book(books: List[Book]) -> None:
