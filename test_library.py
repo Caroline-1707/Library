@@ -91,6 +91,30 @@ class TestLibrary(unittest.TestCase):
         remove_book(self.books)  # Ввод данных будет запрашиваться
         self.assertNotIn("1984", [book.title for book in load_books()])
 
+    @patch('builtins.input', side_effect=["не числовое значение"])
+    def test_remove_book_invalid_id_string(self, mock_input):
+        """Тест удаления книги с некорректным ID (строка)."""
+        books = [Book(1, "1984", "George Orwell", 1949)]
+        remove_book(books)  # Пытаемся удалить книгу с некорректным ID
+        
+        self.assertEqual(len(books), 1)  # Книга должна остаться
+
+    @patch('builtins.input', side_effect=["-1"])
+    def test_remove_book_negative_id(self, mock_input):
+        """Тест удаления книги с отрицательным ID."""
+        books = [Book(1, "1984", "George Orwell", 1949)]
+        remove_book(books)  # Пытаемся удалить книгу с отрицательным ID
+        
+        self.assertEqual(len(books), 1)  # Книга должна остаться
+
+    @patch('builtins.input', side_effect=["2"])  # ID несуществующей книги
+    def test_remove_book_nonexistent_id(self, mock_input):
+        """Тест удаления книги с несуществующим ID."""
+        books = [Book(1, "1984", "George Orwell", 1949)]
+        remove_book(books)  # Пытаемся удалить книгу с несуществующим ID
+        
+        self.assertEqual(len(books), 1)  # Книга должна остаться
+
     def test_search_books(self):
         """Тест поиска книг."""
         found_books = search_books(self.books, "1984")
