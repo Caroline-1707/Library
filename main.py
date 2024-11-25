@@ -119,9 +119,14 @@ def search_books(books: List[Book], search_term: str) -> List[Book]:
     :param search_term: Строка для поиска (название, автор или год).
     :return: Список найденных книг.
     """
-    found_books = [book for book in books if (search_term in book.title or
-                                              search_term in book.author or
-                                              search_term == str(book.year))]
+    found_books = [
+        book for book in books 
+        if (
+            search_term in book.title or
+            search_term in book.author or
+            search_term == str(book.year)
+        )
+    ]
     return found_books
 
 
